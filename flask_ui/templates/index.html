@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FaceShield · 人脸隐私保护系统</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" href="/static/img/icon.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ╔══════════════════════════════════════════╗
+   ║  设计语言：温暖学术 · 论文仪表板           ║
+   ║  主色：米白 + 深棕 + 赭石橙               ║
+   ║  字体：DM Serif + DM Mono + DM Sans       ║
+   ╚══════════════════════════════════════════╝ */
+
+:root {
+  --cream:    #f7f3ee;
+  --cream2:   #ede8e0;
+  --cream3:   #e0d9ce;
+  --paper:    #faf8f5;
+  --ink:      #1c1a17;
+  --ink2:     #3d3a35;
+  --ink3:     #6b6560;
+  --ink4:     #a09890;
+  --rust:     #c0512a;
+  --rust2:    #e06030;
+  --rust-bg:  #fdf0eb;
+  --teal:     #2a7a6e;
+  --teal-bg:  #eaf4f2;
+  --gold:     #b08940;
+  --gold-bg:  #fdf6e8;
+  --border:   #d8d0c6;
+  --border2:  #c8bfb3;
+  --shadow:   0 1px 3px rgba(28,26,23,0.06), 0 4px 16px rgba(28,26,23,0.04);
+  --shadow2:  0 2px 8px rgba(28,26,23,0.10), 0 8px 32px rgba(28,26,23,0.06);
+  --radius:   12px;
+  --serif:    'DM Serif Display', Georgia, serif;
+  --mono:     'DM Mono', 'Courier New', monospace;
+  --sans:     'DM Sans', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* 顶部细线装饰 */
+body::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rust) 0%, var(--gold) 50%, var(--teal) 100%);
+}
+
+/* ── 头部 ─────────────────────────────────── */
+header {
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  height: 68px;
+  gap: 24px;
+}
+
+.logo-text {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.logo-text span { color: var(--rust); }
+
+.header-sep {
+  width: 1px; height: 24px;
+  background: var(--border);
+}
+
+.header-subtitle {
+  font-size: 12px;
+  color: var(--ink4);
+  letter-spacing: 0.04em;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.device-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--teal-bg);
+  color: var(--teal);
+  border: 1px solid #b8dbd6;
+  letter-spacing: 0.05em;
+}
+
+.author-tag {
+  font-size: 12px;
+  color: var(--ink3);
+}
+
+/* ── 导航 ─────────────────────────────────── */
+nav {
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(28,26,23,0.04);
+}
+
+.nav-tab {
+  padding: 16px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.18s;
+  white-space: nowrap;
+  user-select: none;
+  letter-spacing: 0.01em;
+  margin-bottom: -1px;
+}
+.nav-tab:hover { color: var(--ink); }
+.nav-tab.active {
+  color: var(--rust);
+  border-bottom-color: var(--rust);
+  font-weight: 600;
+}
+
+/* ── 主体 ─────────────────────────────────── */
+main {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 36px 40px;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* 页面标题区 */
+.page-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.page-title {
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.page-desc {
+  font-size: 13px;
+  color: var(--ink3);
+  margin-top: 6px;
+}
+
+/* ── 卡片 ─────────────────────────────────── */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: var(--shadow2); }
+
+.card-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink4);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── 布局 ─────────────────────────────────── */
+.layout-sidebar { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: stretch; }
+.layout-2col    { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.layout-3col    { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.layout-4col    { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 960px) {
+  .layout-sidebar, .layout-2col, .layout-3col { grid-template-columns: 1fr; }
+  .layout-4col { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── 表单 ─────────────────────────────────── */
+.field { margin-bottom: 20px; }
+.field:last-child { margin-bottom: 0; }
+
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.field-label-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+  letter-spacing: 0.02em;
+}
+.field-label-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--rust);
+  font-weight: 500;
+}
+
+input[type="text"] {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+input[type="text"]:focus {
+  border-color: var(--rust2);
+  box-shadow: 0 0 0 3px rgba(192,81,42,0.08);
+}
+input[type="text"]::placeholder { color: var(--ink4); }
+
+/* 滑块 */
+input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 3px;
+  background: var(--cream3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  background: var(--paper);
+  border: 2px solid var(--rust);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(192,81,42,0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(192,81,42,0.3);
+}
+
+/* Radio 标签 */
+.tag-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  padding: 5px 14px;
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  background: var(--paper);
+}
+.tag:hover { border-color: var(--rust2); color: var(--rust); }
+.tag.active {
+  background: var(--rust-bg);
+  border-color: var(--rust2);
+  color: var(--rust);
+  font-weight: 500;
+}
+
+/* Toggle */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.toggle-pill {
+  width: 38px; height: 20px;
+  background: var(--cream3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  position: relative;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.toggle-pill::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: white;
+  border-radius: 50%;
+  top: 2px; left: 2px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-pill.on {
+  background: var(--rust2);
+  border-color: var(--rust2);
+}
+.toggle-pill.on::after { left: 20px; }
+.toggle-label { font-size: 13px; color: var(--ink2); }
+
+/* ── 按钮 ─────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 24px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.01em;
+}
+.btn-primary {
+  background: var(--rust);
+  color: white;
+  box-shadow: 0 2px 6px rgba(192,81,42,0.3);
+}
+.btn-primary:hover {
+  background: var(--rust2);
+  box-shadow: 0 4px 12px rgba(192,81,42,0.35);
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--ink2);
+  border: 1px solid var(--border2);
+}
+.btn-outline:hover {
+  border-color: var(--rust2);
+  color: var(--rust);
+  background: var(--rust-bg);
+}
+.btn-teal {
+  background: var(--teal);
+  color: white;
+  box-shadow: 0 2px 6px rgba(42,122,110,0.25);
+}
+.btn-teal:hover { background: #236b60; transform: translateY(-1px); }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+/* ── 图像区 ─────────────────────────────────── */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: 10px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  overflow: hidden;
+  background: var(--cream);
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--rust2); background: var(--rust-bg); }
+.upload-zone img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.upload-hint {
+  font-size: 12px;
+  color: var(--ink4);
+  text-align: center;
+  line-height: 2;
+}
+.upload-icon { font-size: 28px; opacity: 0.5; }
+
+.img-box {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.img-box img { width: 100%; height: auto; display: block; }
+.img-empty {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink4);
+  letter-spacing: 0.05em;
+}
+.img-caption {
+  font-size: 11px;
+  color: var(--ink4);
+  margin-top: 6px;
+  text-align: center;
+  font-family: var(--mono);
+}
+
+/* ── 指标卡 ─────────────────────────────────── */
+.metric-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--cream3);
+}
+.metric-card.good::before { background: var(--teal); }
+.metric-card.warn::before { background: var(--gold); }
+.metric-card.info::before { background: var(--rust); }
+
+.metric-num {
+  font-family: var(--serif);
+  font-size: 28px;
+  color: var(--ink);
+  line-height: 1;
+  margin-top: 4px;
+}
+.metric-card.good .metric-num { color: var(--teal); }
+.metric-card.warn .metric-num { color: var(--gold); }
+.metric-card.info .metric-num { color: var(--rust); }
+.metric-unit {
+  font-size: 12px;
+  color: var(--ink3);
+  font-family: var(--mono);
+  margin-left: 3px;
+}
+.metric-name {
+  font-size: 11px;
+  color: var(--ink4);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--mono);
+}
+.metric-target {
+  font-size: 10px;
+  color: var(--ink4);
+  margin-top: 3px;
+  font-family: var(--mono);
+}
+
+/* ── 终端日志 ─────────────────────────────────── */
+.log-box {
+  background: #1e1b18;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.log-titlebar {
+  background: #2a2520;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #3a3530;
+}
+.log-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.log-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #6b6560;
+  margin-left: 4px;
+  flex: 1;
+}
+.log-clear {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #6b6560;
+  cursor: pointer;
+  padding: 2px 8px;
+  border: 1px solid #3a3530;
+  border-radius: 4px;
+  background: transparent;
+  transition: color 0.15s;
+}
+.log-clear:hover { color: #a09880; }
+.log-body {
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #c8b89a;
+  height: 340px;
+  overflow-y: auto;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.log-body::-webkit-scrollbar { width: 3px; }
+.log-body::-webkit-scrollbar-thumb { background: #3a3530; border-radius: 2px; }
+.log-ok      { color: #7ec8a4; }
+.log-error   { color: #e07060; }
+.log-warn    { color: #d4a84a; }
+.log-success { color: #7ec8a4; }
+.log-accent  { color: #e8c87a; }
+
+/* 进度条 */
+.progress-track {
+  background: var(--cream3);
+  border-radius: 3px;
+  height: 5px;
+  overflow: hidden;
+  margin: 12px 0 6px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--rust) 0%, var(--gold) 100%);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink4);
+  text-align: right;
+}
+
+/* ── 徽章 ─────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 500;
+}
+.badge-green { background: var(--teal-bg); color: var(--teal); border: 1px solid #b8dbd6; }
+.badge-red   { background: #fdecea;        color: #c0392b;     border: 1px solid #f5c0ba; }
+.badge-rust  { background: var(--rust-bg); color: var(--rust); border: 1px solid #f0c8b8; }
+.badge-gold  { background: var(--gold-bg); color: var(--gold); border: 1px solid #e8d4a0; }
+
+/* ── Spinner ─────────────────────────────── */
+.spin {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: rot 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes rot { to { transform: rotate(360deg); } }
+
+/* 状态行 */
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.status-row:last-child { border-bottom: none; padding-bottom: 0; }
+.status-key { color: var(--ink3); }
+.status-val { font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: 500; }
+
+/* 图表占位 */
+.chart-slot {
+  background: var(--cream);
+  border: 1px dashed var(--border2);
+  border-radius: 10px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.chart-slot-icon { font-size: 32px; opacity: 0.3; }
+.chart-slot-text { font-size: 12px; color: var(--ink4); font-family: var(--mono); }
+.chart-slot img { width: 100%; border-radius: 10px; display: block; }
+
+/* 目标对照表 */
+.target-table { width: 100%; border-collapse: collapse; }
+.target-table th {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink4);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.target-table td {
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink2);
+}
+.target-table tr:last-child td { border-bottom: none; }
+.target-table td:last-child {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: right;
+}
+
+/* 分区标题 */
+.section {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink4);
+  margin: 20px 0 10px;
+}
+
+/* 入场动画 */
+.tab-panel.active .card {
+  animation: up 0.28s cubic-bezier(.16,1,.3,1) both;
+}
+.tab-panel.active > * + * .card { animation-delay: 0.05s; }
+@keyframes up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 页脚 ─────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 28px 40px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--ink4);
+  margin-top: 48px;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+
+/* 分割线 */
+hr.soft {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* ── 目标人脸上传区（小尺寸） ────────────── */
+#targetDropZone:hover {
+  border-color: var(--rust2) !important;
+  background: var(--rust-bg) !important;
+}
+
+/* ── 性能测试专属 ─────────────────────────── */
+.perf-gauge-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 0 4px;
+}
+.perf-run-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.perf-run-row:last-child { border-bottom: none; }
+.perf-run-idx  { font-family: var(--mono); font-size: 11px; color: var(--ink4); width: 24px; flex-shrink: 0; }
+.perf-run-bar-wrap { flex: 1; background: var(--cream3); border-radius: 3px; height: 6px; overflow: hidden; }
+.perf-run-bar  { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--rust) 0%, var(--gold) 100%); transition: width 0.5s cubic-bezier(.16,1,.3,1); }
+.perf-run-val  { font-family: var(--mono); font-size: 11px; color: var(--ink2); width: 44px; text-align: right; flex-shrink: 0; }
+.perf-rating   { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-family: var(--mono); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ══ 顶部渐变线由 body::before 实现 ══ -->
+
+<header>
+  <div class="logo-text">Face<span>Shield</span></div>
+  <div class="header-sep"></div>
+  <div class="header-subtitle">基于对抗扰动的人脸隐私保护系统</div>
+  <div class="header-right">
+    <span class="author-tag">保定学院 · 于宙琛</span>
+    <span class="device-tag" id="deviceBadge">{{ device }}</span>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tab active" data-tab="protect">单张图像保护</div>
+  <div class="nav-tab" data-tab="dataset">数据集准备及测试</div>
+  <div class="nav-tab" data-tab="experiment">批量实验</div>
+  <div class="nav-tab" data-tab="results">实验结果</div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════
+     Tab 1 — 单张图像保护
+════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab-protect">
+  <div class="page-header">
+    <div>
+      <div class="page-title">单张图像保护</div>
+      <div class="page-desc">上传人脸图像，生成带对抗扰动的受保护图像</div>
+    </div>
+  </div>
+
+  <!-- 三列等高：[控制 260px] [图像2×2] [指标+换脸] -->
+  <div style="display:grid;grid-template-columns:260px 1fr 1fr;gap:20px;align-items:stretch">
+
+    <!-- ── 列①：控制面板，flex纵向撑满 ── -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <div class="card-label">输入图像</div>
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">🖼</div>
+          <div class="upload-hint">点击选择 或 拖拽图片至此处<br>支持 JPG · PNG · WebP</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display:none">
+      </div>
+
+      <!-- 参数卡 flex:1 撑满剩余高度，内部 flex 列方向，按钮 margin-top:auto 贴底 -->
+      <div class="card" style="flex:1;display:flex;flex-direction:column">
+        <div class="card-label">扰动参数</div>
+        <div class="field">
+          <div class="field-label">
+            <span class="field-label-text">扰动强度 ε</span>
+            <span class="field-label-val" id="epsilonVal">8 / 255</span>
+          </div>
+          <input type="range" id="epsilon" min="2" max="16" value="8" step="1"
+            oninput="document.getElementById('epsilonVal').textContent=this.value+' / 255'">
+        </div>
+        <div class="field">
+          <div class="field-label">
+            <span class="field-label-text">迭代次数</span>
+            <span class="field-label-val" id="stepsVal">40 步</span>
+          </div>
+          <input type="range" id="numSteps" min="5" max="100" value="40" step="5"
+            oninput="document.getElementById('stepsVal').textContent=this.value+' 步'">
+        </div>
+        <div class="field">
+          <div class="field-label"><span class="field-label-text">攻击算法</span></div>
+          <div class="tag-group" id="algoGroup">
+            <div class="tag active" data-val="pgd">PGD</div>
+            <div class="tag" data-val="mifgsm">MI-FGSM</div>
+            <div class="tag" data-val="fgsm">FGSM</div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="toggle-row" onclick="toggleAdaptive()">
+            <div class="toggle-pill on" id="adaptiveToggle"></div>
+            <span class="toggle-label">自适应 ε（按纹理复杂度分配预算）</span>
+          </div>
+        </div>
+        <div class="progress-track" id="protectProgressTrack" style="display:none;margin-top:12px">
+          <div class="progress-fill" id="protectProgressBar"></div>
+        </div>
+        <div class="progress-label" id="protectProgressText" style="display:none;margin-bottom:8px"></div>
+        <!-- margin-top:auto 把按钮推到底部 -->
+        <button class="btn btn-primary btn-full" id="protectBtn" onclick="runProtect()" style="margin-top:auto;padding-top:11px">
+          <span>🚀</span> 生成保护图像
+        </button>
+      </div>
+    </div>
+
+    <!-- ── 列②：一张卡撑满整列，内部图片自动平分高度 ── -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label">图像结果</div>
+      <!-- 2×2网格，grid-template-rows让两行平分剩余空间 -->
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px">
+        <div style="display:flex;flex-direction:column">
+          <div class="img-box" id="origResult" style="flex:1">
+            <span class="img-empty">原始图像</span>
+          </div>
+          <div class="img-caption" style="margin-top:6px;flex-shrink:0">原始图像</div>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <div class="img-box" id="advResult" style="flex:1">
+            <span class="img-empty">等待处理</span>
+          </div>
+          <div class="img-caption" style="margin-top:6px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between">
+            <span>受保护图像</span>
+            <a id="downloadBtn" href="#" download="protected_face.png"
+               class="btn btn-outline" style="display:none;padding:3px 10px;font-size:11px;gap:4px">⬇ 下载</a>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <div class="img-box" id="pertResult" style="flex:1">
+            <span class="img-empty">—</span>
+          </div>
+          <div class="img-caption" style="margin-top:6px;flex-shrink:0">扰动可视化（×10）</div>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <div class="img-box" id="epsResult" style="flex:1">
+            <span class="img-empty">—</span>
+          </div>
+          <div class="img-caption" style="margin-top:6px;flex-shrink:0">自适应 ε 分布图</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 列③：指标卡固定 + 换脸卡 flex:1 撑满 ── -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <div class="card" id="metricsCard">
+        <div class="card-label">质量指标</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="metric-card" id="m-psnr">
+            <div class="metric-name">PSNR</div>
+            <div class="metric-num" id="v-psnr">—<span class="metric-unit">dB</span></div>
+            <div class="metric-target">目标 &gt; 30 dB</div>
+          </div>
+          <div class="metric-card" id="m-ssim">
+            <div class="metric-name">SSIM</div>
+            <div class="metric-num" id="v-ssim">—</div>
+            <div class="metric-target">目标 &gt; 0.95</div>
+          </div>
+          <div class="metric-card info">
+            <div class="metric-name">L∞ 扰动</div>
+            <div class="metric-num" id="v-linf">—<span class="metric-unit">/255</span></div>
+            <div class="metric-target">≤ ε 预算</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-name">耗时</div>
+            <div class="metric-num" id="v-time">—<span class="metric-unit">s</span></div>
+            <div class="metric-target">处理时间</div>
+          </div>
+        </div>
+        <div class="metric-card" id="m-cos" style="display:none;margin-top:12px">
+          <div class="metric-name">ID 余弦相似度</div>
+          <div class="metric-num" id="v-cos">—</div>
+          <div class="metric-target">目标 &lt; 0.5</div>
+        </div>
+      </div>
+
+      <!-- 换脸卡 flex:1 撑满剩余高度 -->
+      <div class="card" style="flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;flex-shrink:0">
+          <div class="card-label" style="margin-bottom:0">换脸攻击效果对比</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="swapModeBadge" style="display:none"></span>
+            <button id="attackTestBtn" onclick="runAttackTest()"
+                    class="btn btn-outline"
+                    style="display:none;padding:5px 14px;font-size:11px;gap:6px">
+              ⚔️ 换脸攻击测试
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;
+                    background:var(--cream);border:1px solid var(--border);
+                    border-radius:10px;padding:10px 12px;margin-bottom:14px">
+          <div id="targetDropZone"
+               style="width:52px;height:52px;border:2px dashed var(--border2);
+                      border-radius:8px;cursor:pointer;display:flex;flex-direction:column;
+                      align-items:center;justify-content:center;gap:3px;flex-shrink:0;
+                      overflow:hidden;transition:border-color 0.18s,background 0.18s;background:var(--paper)">
+            <div class="upload-icon" style="font-size:16px;opacity:0.4">👤</div>
+            <div class="upload-hint" style="font-size:9px;line-height:1.3;text-align:center">目标<br>人脸</div>
+          </div>
+          <input type="file" id="targetFileInput" accept="image/*" style="display:none">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:3px">
+              目标人脸 <span style="font-family:var(--mono);color:var(--ink4);font-weight:400;font-size:10px">pic_b</span>
+            </div>
+            <div style="font-size:11px;color:var(--ink4);line-height:1.6">
+              不上传则用默认 <span style="font-family:var(--mono);color:var(--rust);font-size:10px">SIMSWAP_DEFAULT_TARGET</span>
+            </div>
+          </div>
+          <button class="btn btn-outline" style="padding:4px 10px;font-size:11px;flex-shrink:0"
+                  onclick="clearTargetFile()">清除</button>
+        </div>
+
+        <div style="font-size:11px;color:var(--ink4);margin-bottom:12px;line-height:1.7;flex-shrink:0">
+          <b>左</b>：原图换脸（身份被提取 ✗）&emsp;<b style="color:var(--rust)">右</b>：保护图换脸（身份被干扰 ✓）
+        </div>
+
+        <!-- 换脸结果：flex:1撑满剩余空间，图片自动填充 -->
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px" id="swapCompareRow">
+          <div style="display:flex;flex-direction:column">
+            <div class="img-box" id="swapOrigResult" style="flex:1"><span class="img-empty">—</span></div>
+            <div class="img-caption" style="margin-top:6px;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              <span style="width:7px;height:7px;border-radius:50%;background:#e06030;display:inline-block;flex-shrink:0"></span>
+              <span id="swapOrigCaption">原图换脸（✗）</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div class="img-box" id="swapProtResult" style="flex:1"><span class="img-empty">—</span></div>
+            <div class="img-caption" style="margin-top:6px;flex-shrink:0;display:flex;align-items:center;gap:5px">
+              <span style="width:7px;height:7px;border-radius:50%;background:#2a7a6e;display:inline-block;flex-shrink:0"></span>
+              <span id="swapProtCaption">保护图换脸（✓）</span>
+            </div>
+          </div>
+        </div>
+        <div id="swapComparePlaceholder"
+             style="flex:1;display:flex;align-items:center;justify-content:center;
+                    font-family:var(--mono);font-size:12px;color:var(--ink4)">
+          生成保护图后，点击上方按钮开始换脸攻击测试
+        </div>
+      </div>
+
+    </div><!-- /列③ -->
+  </div><!-- /三列 -->
+</div>
+<!-- ══════════════════════════════════════════
+     Tab 2 — 数据集准备及测试
+════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-dataset">
+  <div class="page-header">
+    <div>
+      <div class="page-title">数据集准备及测试</div>
+      <div class="page-desc">批量预处理图片，统一裁剪至 224×224 格式；测量单张处理耗时</div>
+    </div>
+  </div>
+
+  <!-- 三列：来源配置 | 处理日志（宽） | 性能测试 -->
+  <div style="display:grid;grid-template-columns:280px 1fr 260px;gap:20px;align-items:stretch">
+
+    <!-- 列①：来源配置，卡片直接作为 grid item 撑满列高 -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label">来源配置</div>
+      <div class="field">
+        <div class="field-label"><span class="field-label-text">图片文件夹路径</span></div>
+        <input type="text" id="srcFolder" placeholder="例：C:\Downloads\img_align_celeba">
+      </div>
+      <div class="field">
+        <div class="field-label">
+          <span class="field-label-text">目标尺寸</span>
+          <span class="field-label-val" id="prepSizeVal">224 px</span>
+        </div>
+        <input type="range" id="prepImgSize" min="128" max="512" value="224" step="32"
+          oninput="document.getElementById('prepSizeVal').textContent=this.value+' px'">
+      </div>
+      <div class="field">
+        <div class="field-label">
+          <span class="field-label-text">最多处理张数</span>
+          <span class="field-label-val" id="maxSamplesVal">100 张</span>
+        </div>
+        <input type="range" id="maxSamples" min="10" max="500" value="100" step="10"
+          oninput="document.getElementById('maxSamplesVal').textContent=this.value+' 张'">
+      </div>
+
+      <!-- 数据集状态：参数和按钮之间，检查后显示 -->
+      <div id="datasetStatusCard" style="display:none;margin:12px 0 0">
+        <hr class="soft">
+        <div class="card-label" style="margin:10px 0 8px">数据集状态</div>
+        <div id="datasetStatusContent"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:auto;padding-top:16px">
+        <button class="btn btn-primary" style="flex:1;white-space:nowrap" onclick="prepareDataset()">开始处理</button>
+        <button class="btn btn-outline" style="flex:1;white-space:nowrap" onclick="checkDataset()">检查状态</button>
+      </div>
+    </div>
+
+    <!-- 列②：处理日志 -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label" style="justify-content:space-between;align-items:center">
+        处理日志
+        <button class="log-clear" onclick="document.getElementById('datasetLog').innerHTML=''">清空</button>
+      </div>
+      <div class="progress-track" id="prepProgressTrack" style="display:none">
+        <div class="progress-fill" id="prepProgressBar"></div>
+      </div>
+      <div class="progress-label" id="prepProgressText" style="display:none;margin-bottom:12px"></div>
+      <div class="log-box" style="flex:1;display:flex;flex-direction:column">
+        <div class="log-titlebar">
+          <div class="log-dot" style="background:#e06c75"></div>
+          <div class="log-dot" style="background:#e5c07b"></div>
+          <div class="log-dot" style="background:#98c379"></div>
+          <div class="log-title">dataset_prepare.log</div>
+        </div>
+        <div class="log-body" id="datasetLog" style="height:300px;max-height:300px;overflow-y:auto">等待操作...</div>
+      </div>
+    </div>
+
+    <!-- 列③：性能测试（配置+结果竖向排列） -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label">性能测试</div>
+      <div class="field">
+        <div class="field-label">
+          <span class="field-label-text">测试张数</span>
+          <span class="field-label-val" id="perfNVal">5 张</span>
+        </div>
+        <input type="range" id="perfN" min="1" max="20" value="5" step="1"
+          oninput="document.getElementById('perfNVal').textContent=this.value+' 张'">
+      </div>
+      <button class="btn btn-teal btn-full" id="perfBtn" onclick="runPerfTest()">
+        ▶ 开始测试
+      </button>
+      <hr class="soft">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+        <div class="metric-card info" style="flex:1">
+          <div class="metric-name">平均耗时</div>
+          <div class="metric-num" id="perf-avg">—<span class="metric-unit">s</span></div>
+        </div>
+        <div class="metric-card" id="m-fps" style="flex:1">
+          <div class="metric-name">处理速度</div>
+          <div class="metric-num" id="perf-fps">—<span class="metric-unit">张/s</span></div>
+        </div>
+        <div class="metric-card" style="flex:1">
+          <div class="metric-name">总耗时</div>
+          <div class="metric-num" id="perf-total">—<span class="metric-unit">s</span></div>
+        </div>
+        <div class="metric-card" style="flex:1">
+          <div class="metric-name">运行设备</div>
+          <div class="metric-num" style="font-size:16px" id="perf-device">—</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 数据集状态（按需显示，已移入左列） -->
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     Tab 3 — 批量实验
+════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-experiment">
+  <div class="page-header">
+    <div>
+      <div class="page-title">批量攻防实验</div>
+      <div class="page-desc">在测试集上评估防御成功率，自动生成折线图与热力图</div>
+    </div>
+    <span id="expRunningBadge" style="display:none" class="badge badge-rust">
+      <div class="spin" style="border-top-color:var(--rust);border-color:rgba(192,81,42,0.2)"></div>
+      运行中
+    </span>
+  </div>
+
+  <!-- 三列：实验参数 | 实验日志 | 评估目标 -->
+  <div style="display:grid;grid-template-columns:260px 1fr 200px;gap:20px;align-items:stretch">
+
+    <!-- 列①：实验参数 -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label">实验参数</div>
+      <div class="field">
+        <div class="field-label">
+          <span class="field-label-text">扰动强度 ε</span>
+          <span class="field-label-val" id="expEpsVal">8 / 255</span>
+        </div>
+        <input type="range" id="expEpsilon" min="2" max="16" value="8" step="1"
+          oninput="document.getElementById('expEpsVal').textContent=this.value+' / 255'">
+      </div>
+      <div class="field">
+        <div class="field-label">
+          <span class="field-label-text">迭代次数</span>
+          <span class="field-label-val" id="expStepsVal">40 步</span>
+        </div>
+        <input type="range" id="expSteps" min="1" max="100" value="40" step="1"
+          oninput="document.getElementById('expStepsVal').textContent=this.value+' 步'">
+      </div>
+      <div class="field">
+        <div class="field-label">
+          <span class="field-label-text">测试图片数量</span>
+          <span class="field-label-val" id="expNVal">100 张</span>
+        </div>
+        <input type="range" id="expN" min="1" max="200" value="100" step="1"
+          oninput="document.getElementById('expNVal').textContent=this.value+' 张'">
+      </div>
+      <div class="field">
+        <div class="field-label"><span class="field-label-text">攻击算法</span></div>
+        <div class="tag-group" id="expAlgoGroup">
+          <div class="tag active" data-val="pgd">PGD</div>
+          <div class="tag" data-val="mifgsm">MI-FGSM</div>
+          <div class="tag" data-val="fgsm">FGSM</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="toggle-row" onclick="toggleCompare()">
+          <div class="toggle-pill" id="compareToggle"></div>
+          <span class="toggle-label">参数扫描模式（生成热力图）</span>
+        </div>
+      </div>
+      <div class="field">
+        <div class="toggle-row" onclick="toggleFawkes()">
+          <div class="toggle-pill" id="fawkesToggle"></div>
+          <span class="toggle-label">与 Fawkes 基线对比</span>
+        </div>
+      </div>
+      <div class="field">
+        <div class="toggle-row" onclick="toggleDFL()">
+          <div class="toggle-pill" id="dflToggle"></div>
+          <span class="toggle-label">DeepFaceLab 迁移性实验</span>
+        </div>
+      </div>
+      <div class="progress-track" style="margin-top:auto">
+        <div class="progress-fill" id="expProgressBar"></div>
+      </div>
+      <button class="btn btn-primary btn-full" id="expBtn" onclick="runExperiment()" style="margin-top:8px">
+        开始实验
+      </button>
+    </div>
+
+    <!-- 列②：实验日志 -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label">实验日志</div>
+      <div class="log-box" style="flex:1;display:flex;flex-direction:column">
+        <div class="log-titlebar">
+          <div class="log-dot" style="background:#e06c75"></div>
+          <div class="log-dot" style="background:#e5c07b"></div>
+          <div class="log-dot" style="background:#98c379"></div>
+          <div class="log-title">experiment.log</div>
+          <button class="log-clear" onclick="document.getElementById('expLog').innerHTML=''">清空</button>
+        </div>
+        <div class="log-body" id="expLog" style="height:500px;max-height:500px;overflow-y:auto">等待开始...</div>
+      </div>
+    </div>
+
+    <!-- 列③：评估目标竖向排列 -->
+    <div class="card" style="display:flex;flex-direction:column">
+      <div class="card-label">评估目标</div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+        <div style="flex:1;background:var(--cream);border:1px solid var(--border);border-radius:8px;
+                    padding:12px 14px;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">防御成功率 ASR</div>
+          <div style="font-family:var(--mono);font-size:14px;color:var(--teal);font-weight:600">&gt; 80%</div>
+        </div>
+        <div style="flex:1;background:var(--cream);border:1px solid var(--border);border-radius:8px;
+                    padding:12px 14px;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">图像质量 PSNR</div>
+          <div style="font-family:var(--mono);font-size:14px;color:var(--rust);font-weight:600">&gt; 30 dB</div>
+        </div>
+        <div style="flex:1;background:var(--cream);border:1px solid var(--border);border-radius:8px;
+                    padding:12px 14px;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">结构相似 SSIM</div>
+          <div style="font-family:var(--mono);font-size:14px;color:var(--rust);font-weight:600">&gt; 0.95</div>
+        </div>
+        <div style="flex:1;background:var(--cream);border:1px solid var(--border);border-radius:8px;
+                    padding:12px 14px;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">单张处理时间</div>
+          <div style="font-family:var(--mono);font-size:14px;color:var(--gold);font-weight:600">&lt; 10 s</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     Tab 4 — 实验结果
+════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab-results">
+  <div class="page-header">
+    <div>
+      <div class="page-title">实验结果</div>
+      <div class="page-desc">查看生成的折线图与热力图</div>
+    </div>
+    <button class="btn btn-outline" onclick="loadResults()">刷新图表</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+    <div class="card">
+      <div class="card-label">折线图 — ε 对各指标的影响</div>
+      <div class="chart-slot" id="lineChartSlot">
+        <div class="chart-slot-icon">📈</div>
+        <div class="chart-slot-text">运行实验后自动生成</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">热力图 — 参数扫描结果</div>
+      <div class="chart-slot" id="heatmapSlot">
+        <div class="chart-slot-icon">🗺</div>
+        <div class="chart-slot-text">开启参数扫描模式后生成</div>
+      </div>
+    </div>
+
+    <div class="card" id="fawkesChartCard">
+      <div class="card-label">Fawkes 基线对比</div>
+      <div class="chart-slot" id="fawkesChartSlot">
+        <div class="chart-slot-icon">⚖️</div>
+        <div class="chart-slot-text">开启 Fawkes 对比后生成</div>
+      </div>
+    </div>
+
+    <div class="card" id="dflChartCard">
+      <div class="card-label">DeepFaceLab 迁移性实验</div>
+      <div class="chart-slot" id="dflChartSlot">
+        <div class="chart-slot-icon">🔀</div>
+        <div class="chart-slot-text">开启 DFL 迁移实验后生成</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+</main>
+
+<footer>
+  FaceShield · 基于对抗扰动的人脸隐私保护系统 · 保定学院人工智能学院 · 2026
+</footer>
+
+<script src="/static/js/main.js"></script>
+<script>
+/* loadResults 覆盖：4张卡片常驻，无数据时保留占位符不隐藏 */
+async function loadResults() {
+  const res  = await fetch('/api/results');
+  const data = await res.json();
+
+  const slots = {
+    lineChartSlot:   { data: data.line_chart,   icon: '📈', text: '运行实验后自动生成' },
+    heatmapSlot:     { data: data.heatmap,       icon: '🗺', text: '开启参数扫描模式后生成' },
+    fawkesChartSlot: { data: data.fawkes_chart,  icon: '⚖️', text: '开启 Fawkes 对比后生成' },
+    dflChartSlot:    { data: data.dfl_chart,     icon: '🔀', text: '开启 DFL 迁移实验后生成' },
+  };
+
+  for (const [id, cfg] of Object.entries(slots)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (cfg.data) {
+      el.innerHTML = `<img src="data:image/png;base64,${cfg.data}" class="chart-img">`;
+    } else {
+      el.innerHTML = `<div class="chart-slot-icon">${cfg.icon}</div>
+                      <div class="chart-slot-text">${cfg.text}</div>`;
+    }
+  }
+}
+
+/* checkDataset 覆盖：去掉路径显示 */
+async function checkDataset() {
+  const res  = await fetch('/api/dataset_status');
+  const data = await res.json();
+  const card = document.getElementById('datasetStatusCard');
+  const cont = document.getElementById('datasetStatusContent');
+  card.style.display = 'block';
+
+  if (data.ready) {
+    cont.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:var(--ink3)">状态</span>
+          <span class="badge badge-green">✅ 就绪</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:var(--ink3)">图片数量</span>
+          <span style="font-family:var(--mono);color:var(--rust)">${data.count} 张</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:var(--ink3)">图片尺寸</span>
+          <span style="font-family:var(--mono);color:var(--ink2)">${data.size}</span>
+        </div>
+      </div>`;
+  } else {
+    cont.innerHTML = `<span class="badge badge-red">❌ ${data.message}</span>`;
+  }
+}
+
+async function runPerfTest() {
+  const btn = document.getElementById('perfBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin"></div> 测试中...';
+  try {
+    const res  = await fetch('/api/perf_test', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ n: parseInt(document.getElementById('perfN').value) }),
+    });
+    const data = await res.json();
+    document.getElementById('perf-avg').innerHTML   = `${data.avg}<span class="metric-unit">s</span>`;
+    document.getElementById('perf-fps').innerHTML   = `${data.fps}<span class="metric-unit">张/s</span>`;
+    document.getElementById('perf-total').innerHTML = `${data.total}<span class="metric-unit">s</span>`;
+    document.getElementById('perf-device').textContent = data.device;
+    const mFps = document.getElementById('m-fps');
+    mFps.classList.toggle('good', data.fps >= 0.5);
+    mFps.classList.toggle('warn', data.fps > 0 && data.fps < 0.5);
+  } catch(e) {
+    alert('测试失败: ' + e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '▶ 开始测试';
+  }
+}
+</script>
+</body>
+</html>

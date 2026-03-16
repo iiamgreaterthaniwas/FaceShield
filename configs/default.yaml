@@ -1,0 +1,54 @@
+# 人脸隐私保护系统 - 默认配置
+# configs/default.yaml
+
+# ─── 数据集配置 ───
+data:
+  root: "data/processed/celeba_hq"
+  img_size: 256
+  batch_size: 4
+  num_workers: 2
+  num_test_samples: 100        # 测试集图像数量（论文要求 100+）
+
+# ─── 模型配置 ───
+model:
+  name: "simswap"
+  checkpoint: "checkpoints/people"
+  arcface_path: "arcface_model/arcface_checkpoint.tar"
+  img_size: 224
+  id_dim: 512                  # 身份嵌入维度
+
+# ─── 对抗扰动配置 ───
+attack:
+  epsilon: 8                   # 扰动强度 (像素值，8/255)
+  alpha: 1                     # 步长 (像素值，1/255)
+  num_steps: 40                # 迭代次数
+  attack_type: "pgd"           # 算法: pgd / mifgsm / fgsm
+  momentum: 1.0                # MI-FGSM 动量
+
+# ─── 损失函数配置 ───
+loss:
+  lambda_id: 1.0               # 身份欺骗损失权重
+  lambda_percep: 0.1           # 感知质量损失权重
+  lambda_ssim: 0.05            # SSIM 损失权重
+
+# ─── 评估配置 ───
+eval:
+  asr_threshold: 0.5           # 防御成功判定阈值（余弦相似度）
+  target_psnr: 30.0            # 目标 PSNR (dB)
+  target_ssim: 0.95            # 目标 SSIM
+
+# ─── 实验对比配置 ───
+experiment:
+  epsilon_list: [2, 4, 8, 12, 16]   # 消融实验 ε 列表
+  compare_attacks: ["fgsm", "pgd", "mifgsm"]  # 算法对比列表
+
+# ─── 输出配置 ───
+output:
+  results_dir: "data/results"
+  save_images: true
+  save_plots: true
+
+# ─── 系统配置 ───
+system:
+  device: "auto"               # auto / cuda / cpu
+  seed: 42

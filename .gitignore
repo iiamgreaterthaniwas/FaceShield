@@ -1,0 +1,11 @@
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.onnx
+*.h5
+*.hdf5
+*.pb
+*.tflite
+*.weights
+*.model
