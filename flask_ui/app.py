@@ -1,9 +1,3 @@
-"""
-人脸隐私保护系统 - Flask Web 后端
-运行方式: python ui/app.py
-访问: http://localhost:5000
-"""
-
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
